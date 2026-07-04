@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101418">
+<title>Rattlegram Mod</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+	<div class="title-row">
+		<h1>Rattlegram <span class="mod">Mod</span></h1>
+		<div class="header-buttons">
+			<button id="btn-listen" class="icon-btn" title="Toggle listening">&#127908;</button>
+			<button id="btn-keys" class="icon-btn" title="Encryption keys">&#128273;</button>
+			<button id="btn-settings" class="icon-btn" title="Settings">&#9881;&#65039;</button>
+		</div>
+	</div>
+	<div id="status" class="status">idle</div>
+</header>
+
+<main id="messages"></main>
+
+<canvas id="spectrogram" width="360" height="128" hidden></canvas>
+
+<footer>
+	<div class="compose-row">
+		<select id="key-select" title="Encryption key">
+			<option value="00">&#128275; 00</option>
+		</select>
+		<textarea id="compose" rows="1" maxlength="500"
+			placeholder="Message&hellip;" enterkeyhint="send"></textarea>
+		<button id="btn-send" class="send-btn" title="Send">&#9658;</button>
+	</div>
+	<div class="compose-meta">
+		<span id="char-count">0 / 168</span>
+	</div>
+</footer>
+
+<!-- Key manager -->
+<dialog id="dlg-keys">
+	<h2>Encryption keys</h2>
+	<p class="hint">AES-256 keys, up to 10. Messages sent with a key carry its
+	two-character ID so the receiver knows which key to use. ID 00 means
+	unencrypted.</p>
+	<ul id="key-list" class="key-list"></ul>
+	<div class="btn-row">
+		<button id="btn-gen-key">Generate key</button>
+		<button id="btn-import-file">Import file</button>
+		<button id="btn-scan-qr">Scan QR</button>
+	</div>
+	<div class="btn-row">
+		<button class="dlg-close" data-dlg="dlg-keys">Close</button>
+	</div>
+	<input type="file" id="key-file-input" accept=".json,application/json,text/plain" hidden>
+</dialog>
+
+<!-- QR display -->
+<dialog id="dlg-qr">
+	<h2>Key <span id="qr-key-id"></span></h2>
+	<div id="qr-holder"></div>
+	<p class="hint">Scan this from another device to import the key, ID included.</p>
+	<div class="btn-row">
+		<button id="btn-export-file">Save key file</button>
+		<button class="dlg-close" data-dlg="dlg-qr">Close</button>
+	</div>
+</dialog>
+
+<!-- QR scanner -->
+<dialog id="dlg-scan">
+	<h2>Scan key QR</h2>
+	<video id="scan-video" playsinline muted></video>
+	<p id="scan-status" class="hint">Point the camera at a key QR code.</p>
+	<div class="btn-row">
+		<button class="dlg-close" data-dlg="dlg-scan">Cancel</button>
+	</div>
+</dialog>
+
+<!-- Settings -->
+<dialog id="dlg-settings">
+	<h2>Settings</h2>
+	<label>Call sign
+		<input id="set-callsign" maxlength="9" autocapitalize="characters">
+	</label>
+	<label>Carrier frequency (Hz)
+		<input id="set-carrier" type="number" min="800" max="3000" step="50">
+	</label>
+	<label>Noise symbols
+		<input id="set-noise" type="number" min="0" max="64">
+	</label>
+	<label class="check"><input id="set-fancy" type="checkbox"> Fancy header (base37 call sign banner)</label>
+	<label class="check"><input id="set-spectrum" type="checkbox"> Show spectrogram while listening</label>
+	<div class="btn-row">
+		<button class="dlg-close" data-dlg="dlg-settings">Done</button>
+	</div>
+</dialog>
+
+<script src="vendor/qrcode.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="wasm/rattlegram.js"></script>
+<script type="module" src="js/app.js"></script>
+<script>
+if ("serviceWorker" in navigator)
+	navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
