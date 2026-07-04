@@ -300,7 +300,7 @@ $("btn-export-file").addEventListener("click", () => {
 	const blob = new Blob([data], { type: "application/json" });
 	const a = document.createElement("a");
 	a.href = URL.createObjectURL(blob);
-	a.download = `rattlegram-key-${qrKeyId}.json`;
+	a.download = `greenrattle-key-${qrKeyId}.json`;
 	a.click();
 	URL.revokeObjectURL(a.href);
 });

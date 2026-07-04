@@ -1,7 +1,7 @@
 // Cache-first service worker: precaches the entire app so it runs fully
 // offline once installed. Bump VERSION on every deploy to refresh clients.
-const VERSION = "v2";
-const CACHE = `rattlegram-mod-${VERSION}`;
+const VERSION = "v3";
+const CACHE = `greenrattle-${VERSION}`;
 
 const ASSETS = [
 	".",

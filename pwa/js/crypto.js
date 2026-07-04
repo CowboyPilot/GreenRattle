@@ -118,7 +118,7 @@ export function exportKey(id) {
 	if (!k)
 		throw new Error(`No key ${id}.`);
 	return JSON.stringify({
-		app: "rattlegram-mod",
+		app: "greenrattle",
 		type: "aes256-key",
 		id: k.id,
 		key: k.key,

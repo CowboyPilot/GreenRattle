@@ -1,4 +1,4 @@
-# Rattlegram Mod — offline PWA with AES-256 encryption
+# GreenRattle — offline PWA with AES-256 encryption
 
 A Progressive Web App port of [Rattlegram](https://github.com/CowboyPilot/rattlegram)
 (text over audio, up to 170 bytes per transmission) with optional AES-256-GCM
