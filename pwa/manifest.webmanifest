@@ -1,6 +1,6 @@
 {
-	"name": "Rattlegram Mod",
-	"short_name": "Rattlegram",
+	"name": "GreenRattle",
+	"short_name": "GreenRattle",
 	"description": "Send short text messages over audio, with optional AES-256 encryption. Works fully offline.",
 	"start_url": ".",
 	"scope": ".",

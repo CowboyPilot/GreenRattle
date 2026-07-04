@@ -1,6 +1,6 @@
 // Cache-first service worker: precaches the entire app so it runs fully
 // offline once installed. Bump VERSION on every deploy to refresh clients.
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = `rattlegram-mod-${VERSION}`;
 
 const ASSETS = [
@@ -45,6 +45,13 @@ self.addEventListener("fetch", (e) => {
 					caches.open(CACHE).then(c => c.put(e.request, copy));
 				}
 				return resp;
+			}).catch(() => {
+				// Offline with nothing cached for this request. For a page
+				// navigation, fall back to the app shell so the PWA still
+				// opens; for anything else, fail cleanly instead of throwing.
+				if (e.request.mode === "navigate")
+					return caches.match("index.html");
+				return new Response("", { status: 503, statusText: "Offline" });
 			})
 		)
 	);
