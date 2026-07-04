@@ -1,6 +1,6 @@
 // Cache-first service worker: precaches the entire app so it runs fully
 // offline once installed. Bump VERSION on every deploy to refresh clients.
-const VERSION = "v4";
+const VERSION = "v6";
 const CACHE = `greenrattle-${VERSION}`;
 
 const ASSETS = [
@@ -21,7 +21,11 @@ const ASSETS = [
 
 self.addEventListener("install", (e) => {
 	e.waitUntil(
-		caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+		caches.open(CACHE).then(c =>
+			// Bypass the HTTP cache so a version bump always precaches the
+			// current files, never a stale copy the browser held onto.
+			c.addAll(ASSETS.map(u => new Request(u, { cache: "reload" })))
+		).then(() => self.skipWaiting())
 	);
 });
 

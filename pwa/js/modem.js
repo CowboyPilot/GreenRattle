@@ -29,6 +29,14 @@ export class Modem {
 		this.onPing = () => {};     // ({callSign, cfo})
 		this.onSpectrum = null;     // optional (spectrumImageData, spectrogramImageData)
 
+		// While transmitting (and for a short tail afterwards) captured audio
+		// is dropped instead of decoded, so the app never receives its own
+		// outgoing message. Simpler and more reliable than stopping/restarting
+		// the mic stream.
+		this.muted = false;
+		this._unmuteTimer = null;
+		this.txTailGuardMs = 300;
+
 		// scratch WASM buffers
 		this._payloadPtr = wasm._malloc(PAYLOAD_SIZE);
 		this._callPtr = wasm._malloc(CALL_BUF);
@@ -99,11 +107,37 @@ export class Modem {
 			off += c.length;
 		}
 
+		const durationSec = total / rate;
+
+		// Gate the decoder for the whole transmission so we don't decode our
+		// own audio through the mic. Cleared a short guard time after playback
+		// ends, to also skip the room echo of the tail.
+		this.muted = true;
+		if (this._unmuteTimer) {
+			clearTimeout(this._unmuteTimer);
+			this._unmuteTimer = null;
+		}
+
 		return new Promise(resolve => {
 			const src = ctx.createBufferSource();
 			src.buffer = audio;
 			src.connect(ctx.destination);
-			src.onended = () => resolve(total / rate);
+			let done = false;
+			const finish = () => {
+				if (done)
+					return;
+				done = true;
+				clearTimeout(safety);
+				this._unmuteTimer = setTimeout(() => {
+					this.muted = false;
+					this._unmuteTimer = null;
+				}, this.txTailGuardMs);
+				resolve(durationSec);
+			};
+			// onended is normally reliable; the timeout is a safety net so the
+			// mic can never get stuck muted if it doesn't fire.
+			const safety = setTimeout(finish, durationSec * 1000 + 1500);
+			src.onended = finish;
 			src.start();
 		});
 	}
@@ -159,6 +193,8 @@ export class Modem {
 	}
 
 	_onChunk(int16Chunk) {
+		if (this.muted)
+			return; // drop our own transmission instead of decoding it
 		const wasm = this.wasm;
 		const bytes = int16Chunk.length * 2;
 		if (this._feedCap < bytes) {
