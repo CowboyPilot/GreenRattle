@@ -1,6 +1,6 @@
 // Cache-first service worker: precaches the entire app so it runs fully
 // offline once installed. Bump VERSION on every deploy to refresh clients.
-const VERSION = "v6";
+const VERSION = "v7";
 const CACHE = `greenrattle-${VERSION}`;
 
 const ASSETS = [
