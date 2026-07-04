@@ -1,6 +1,6 @@
 // Cache-first service worker: precaches the entire app so it runs fully
 // offline once installed. Bump VERSION on every deploy to refresh clients.
-const VERSION = "v7";
+const VERSION = "v8";
 const CACHE = `greenrattle-${VERSION}`;
 
 const ASSETS = [
@@ -17,6 +17,8 @@ const ASSETS = [
 	"wasm/rattlegram.js",
 	"icons/icon-192.png",
 	"icons/icon-512.png",
+	"icons/icon-192-maskable.png",
+	"icons/icon-512-maskable.png",
 ];
 
 self.addEventListener("install", (e) => {
